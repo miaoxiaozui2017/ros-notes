@@ -1,0 +1,26 @@
+参考：https://github.com/mikkelkh/FieldSAFE
+---------------------------------------------
+# 1.Install ROS <> on Ubuntu <> (Desktop-Full Install)
+[http://wiki.ros.org/kinetic/Installation/Ubuntu]
+# 2.Install the following additional packages:
+$ sudo apt-get install ros-<>-robot-localization 
+$ sudo apt-get install ros-<>-geographic-msgs
+$ sudo apt-get install libpcap-dev
+# 3.Clone and build this repository
+$ git clone https://github.com/mikkelkh/FieldSAFE
+$ cd FieldSAFE
+$ git submodule update --init --recursive
+$ cd ros
+$ catkin_make
+# ERROR:解决办法，用PLUGINLIB_EXPORT_CLASS替换PLUGINLIB_DECLARE_CLASS
+[http://docs.ros.org/jade/api/pluginlib/html/class__list__macros_8h_source.html]
+# 4.Environment Setup
+$ source devel/setup.bash
+# 5.Download a 1 minute example bag with sensor data:
+2016-10-25-11-41-21_example.bag
+# 6.Run the demo
+$ roslaunch demo demo.launch file:=/path/to/2016-10-25-11-41-21_example.bag
+# 用:=指定数据存储位置
+# 7.Download more data from:
+[https://vision.eng.au.dk/fieldsafe/]
+
