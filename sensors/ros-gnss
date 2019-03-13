@@ -1,0 +1,3 @@
+=========================nmea_navsat_driver=====================
+$ sudo apt install ros-melodic-nmea-msgs ros-melodic-nmea-navsat-driver
+

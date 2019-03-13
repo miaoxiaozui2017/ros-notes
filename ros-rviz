@@ -1,0 +1,147 @@
+$ rosrun tf static_transform_publisher 0.0 0.0 0.0 0.0 0.0 0.0 map my_frame 100 
+
+参考：毫米波雷达在rviz中可视化：https://blog.csdn.net/weixin_43246530/article/details/82845615
+==================================================================
+参考：http://wiki.ros.org/rviz#Overview
+
+=========================1.安装==========================
+$ sudo apt-get install ros-melodic-rviz	# sudo apt-get install ros-melodic-rviz*
+$ source /opt/ros/melodic/setup.bash
+$ roscore &
+$ rosrun rviz rviz -h
+# -h,--help:帮助文档
+-----------------窗口介绍-----------------
+# 1.Displays
+# 添加一个显示Add
+# 显示属性Display Properties
+# 显示状态Display Status --- OK, Warning, Error and Disabled
+# 移除一个显示Remove
+# 内置的显示类型Built-in Display Types
+- Axes
+- Effort:表示机器人每个转动关节所受的力。
+- Camera:从摄像机的角度创建一个新的渲染窗口，并将图像覆盖在其上。
+- Grid沿平面显示二维或三维网格
+- Grid Cells从网格中绘制单元格，通常是从导航堆栈中的costmap中绘制障碍。
+- Image创建带有图像的新呈现窗口。与相机显示不同，此显示不使用CameraInfo
+- InteractiveMarker显示来自一个或多个交互式标记服务器的3D对象，并允许鼠标与它们进行交互。
+- Laser Scan显示来自激光扫描的数据，具有不同的呈现模式、积累等选项
+- Map在地平面上显示地图
+-x Markers允许程序员通过主题显示任意原始形状
+- Path显示来自导航堆栈的路径
+-x Point把一个点画成一个小球体
+- Pose以箭头或轴的形式绘制姿势
+- Pose Array绘制一个由箭头组成的“云”，每个箭头对应一个姿势数组
+-x Point Cloud(2)显示来自点云的数据
+- Polygon绘制多边形的轮廓线
+- Odometry随着时间的推移积累里程测量姿势
+- Range显示声纳或红外距离传感器的圆锥距离测量
+- RobotModel显示机器人在正确姿势下的视觉表示(由当前TF转换定义)
+- TF显示tf转换层次结构
+-x Wrench
+-x Oculus
+?FluidPressure
+?Markers->Marker/MarkerArray
+?Point Cloud(2)->PointCloud/PointCloud2
+?DepthCloud
+?Group
+?Illuminance
+?PointStamped
+?PoseWithCovariance
+?RelativeHumidity
+?Temperature
+?WrenchStamped
+----------------------视图面板Views Panel-----------------
+- Orbital Camera (default)：只是围绕着一个焦点旋转，同时总是注视着那个焦点。当你移动相机的时候，焦点被想象成一个小圆盘
+- FPS (first-person) Camera：第一人称相机，所以它会像你用头看东西一样旋转。
+- Top-down Orthographic：沿着Z轴向下看(在机器人框架中)，这是一个正投影视图，这意味着物体不会随着距离的增加而变小。
+- XY Orbit：焦点限制在XY平面上（与第一个类似）
+- Third Person Follower：摄像机对目标帧保持恒定的视角。与XY轨道不同的是，如果目标帧是yaws，摄像机就会转动。例如，如果您正在对带有拐角的走廊进行3D映射，那么这将非常方便。
+- 视图由目标帧、摄像机类型和摄像机姿态组成。
+---------------------坐标转换----------------------------
+- rviz使用tf转换系统将数据从它到达的坐标系转换为全局参考系
+- 固定坐标系Fixed Frame
+ 两个坐标系中更重要的是固定坐标系。固定坐标系是用来表示“世界”坐标系的参考系。这通常是“地图”，或“世界”，或类似的东西，但也可以是，例如，你的里程计坐标系。
+如果错误地将固定坐标系设置为，比如说，机器人的基坐标系，那么机器人所见过的所有物体都会出现在机器人的前面，相对于它们被检测到的机器人的位置。为了得到正确的结果，固定坐标系不应该相对于世界运动。
+如果更改固定帧，则当前显示的所有数据都将被清除，而不是重新转换。
+- 目标坐标系Target Frame
+目标坐标系是摄像机视图的参考坐标系。例如，如果你的目标坐标系是地图，你会看到机器人在地图上行驶。如果你的目标坐标系是机器人的基坐标系，那么当其他物体相对于它移动时，机器人将保持在原地不动。
+-------------------tools----------------------
+- 移动摄像头(快捷键:m)
+- 选择(快捷键:s)
+	- 您可以使用Shift键向选择项添加内容，并使用Ctrl键从选择项中删除内容。
+	- 如果你想在选择时移动相机而不切换回移动相机工具，你可以按住Alt键。
+	- f键将相机的焦点对准当前选择。
+- 2D导航目标(快捷键:g)
+- 2D位姿估计(键盘快捷键:p)
+
+支持双目Stereo
+支持设备插件Plugins
+====================Tutorials========================
+-------------------1.Markers: Sending Basic Shapes (C++)-------------
+[http://wiki.ros.org/rviz/Tutorials/Markers%3A%20Basic%20Shapes]
+# 演示如何使用visualization_msgs/Marker消息将基本形状(立方体、球体、圆柱、箭头)发送到rviz。
+# 1.创建一个名为using_marker的包
+$ cd ~/catkin_ws/src
+$ catkin_create_pkg using_markers roscpp visualization_msgs
+# 2.将以下内容粘贴到src/basic_shapes.cpp中
+[http://wiki.ros.org/rviz/Tutorials/Markers%3A%20Basic%20Shapes]
+[--------CMakeLists.txt---------]
+add_executable(basic_shapes src/basic_shapes.cpp)
+target_link_libraries(basic_shapes ${catkin_LIBRARIES})
+[--------CMakeLists.txt---------]
+# 3.编译
+$ cd ~/catkin_ws
+$ catkin_make
+# 4.启动发布器basic_shapes
+$ rosrun using_markers basic_shapes
+# 5.在rviz中可视化
+$ rosrun rviz rviz
+# Add一个Maker，将Global Options->Fixed Frame修改为/my_frame
+-------------------2.Markers: Points and Lines (C++)-------------
+[http://wiki.ros.org/rviz/Tutorials/Markers%3A%20Points%20and%20Lines]
+# 如何使用visualization_msgs/Marker消息向rviz发送点和线
+- POINTS, LINE_STRIP(连接的线) and LINE_LIST（不连接的线）
+# 1.创建一个名为using_marker的包
+$ cd ~/catkin_ws/src
+$ catkin_create_pkg using_markers roscpp visualization_msgs
+# 2.将以下内容粘贴到src/points_and_lines.cpp中
+[http://wiki.ros.org/rviz/Tutorials/Markers%3A%20Points%20and%20Lines]
+[--------CMakeLists.txt---------]
+add_executable(points_and_lines src/points_and_lines.cpp)
+target_link_libraries(points_and_lines ${catkin_LIBRARIES})
+[--------CMakeLists.txt---------]
+# 3.编译
+$ cd ~/catkin_ws
+$ catkin_make
+# 4.启动发布器points_and_lines
+$ rosrun using_markers points_and_lines
+# 5.在rviz中可视化
+$ rosrun rviz rviz
+# Add一个Maker，将Global Options->Fixed Frame修改为/my_frame
+-------------------3.Interactive Markers: Getting Started-------------
+# 本教程解释了什么是交互式标记，并教你一些基本概念。
+[http://wiki.ros.org/rviz/Tutorials/Interactive%20Markers%3A%20Getting%20Started]
+# 理解交互式标记的最佳方式是尝试interactive_marker_tutorials包中包含的示例。它包含五个示例:simple_marker、basic_controls、menu、pong和cube。
+# 0.运行interactive_marker_tutorials和rviz
+$ rosrun interactive_marker_tutorials basic_controls	# 启动包含交互式标记服务器的节点
+$ rosrun rviz rviz	
+# Fixed Frame设置为'/base_link'
+# 点击“Displays”面板中的“Add”按钮，添加一个“Interactive Markers”显示
+# 将此显示的update topic设置为“/basic_controls/update”
+# 在工具面板中选择“Interact”,有些标记有一个上下文菜单，您可以通过右键单击它们来访问
+# 添加一个“Grid”显示帮助理解拖动标记时它们是如何在空间中移动的
+# 1.simple_marker[http://wiki.ros.org/rviz/Tutorials/Interactive%20Markers%3A%20Writing%20a%20Simple%20Interactive%20Marker%20Server]
+# 2.basic_controls!!![http://wiki.ros.org/rviz/Tutorials/Interactive%20Markers%3A%20Basic%20Controls]
+# 3.menu
+# 4.pong
+# 5.cube
+====================扩展阅读==========================
+Basic Shapes API Wrapper - rviz_visual_tools
+[https://github.com/PickNikRobotics/rviz_visual_tools]
+
+------------------error------------------------
+rviz: /build/ogre-1.9-B6QkmW/ogre-1.9-1.9.0+dfsg1/OgreMain/include/OgreAxisAlignedBox.h:252: void Ogre::AxisAlignedBox::setExtents(const Ogre::Vector3&, const Ogre::Vector3&): Assertion `(min.x <= max.x && min.y <= max.y && min.z <= max.z) && "The minimum corner of the box must be less than or equal to maximum corner"' failed.
+
+
+
+

@@ -1,0 +1,63 @@
+===================ROS usb-camera===========================
+$ git clone https://github.com/ros-drivers/usb_cam.git
+$ roslaunch usb_cam usb_cam-test.launch
+
+plan a:
+$ mkdir -p ~/ws/src
+$ cd ~/ws/src
+$ git clone https://github.com/ros-drivers/usb_cam.git
+$ cd ..
+$ source devel/setup.bash
+$ catkin_make
+$ roslaunch usb_cam usb_cam-test.launch 
+sudo apt install libcurl4-openssl-dev
+
+
+plan b:
+$ sudo apt install ros-melodic-uvc-camera
+$ rosrun uvc_camera uvc_camera_node
+
+plan c:fix image_view
+$ git clone https://github.com/ros-perception/image_pipeline.git
+$ git -C image_pipeline fetch origin pull/343/head:mutex_error_resolve
+$ git -C image_pipeline checkout mutex_error_resolve 
+$ roscd
+$ cd ..
+$ catkin_make
+$ sudo mv image_view image_view_broken
+$ sudo ln ~/catkin_ws/devel/lib/image_view/image_view ./image_view
+
+plan d:
+$ rqt_image_view
+==============================标定============================
+$ roscore
+$ rosrun uvc_camera uvc_camera_node
+$ rostopic list
+/image_raw
+$ rosrun camera_calibration cameracalibrator.py --size 11x7 --square 0.03 image:=/image_raw
+[移动标定板，待calibration-button亮了按下并带一分钟,使用opencv的calibration模块]
+[save-button保存标定结果]
+[image_width\image_height]代表图片的长宽
+[camera_name]摄像头名
+[camera_matrix]摄像头的内部参数矩阵
+[distortion_model]畸变模型
+[distortion_coefficients]畸变模型的系数
+[rectification_matrix]矫正矩阵（一般为单位阵）
+[projection_matrix]外部世界坐标到像平面的投影矩阵
+
+
+$ rosrun camera_calibration_parsers convert in-file out-file	???
+==============================使用==========================
+# 1.启动roscore和uvc_camera,引入标定信息
+$ sudo cp example.yaml /opt/ros/melodic/share/uvc_camera/
+$ sudo cp camera_node1.launch /opt/ros/melodic/share/uvc_camera/launch/
+$ roslaunch uvc_camera camera_node1.launch 
+# 相机显示图像？
+$ ROS_NAMESPACE=camera rosrun image_proc image_proc 
+# 相机可视化小程序
+$ rqt_image_view 
+
+$ rostopic echo /camera/camera_info	# 查找frame_id
+# 引入rviz可视化
+$ rviz
+# 添加camera，修改fixed frame和update topic

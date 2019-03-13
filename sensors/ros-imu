@@ -1,0 +1,55 @@
+===================ROS usage->imu==========================
+参考：[https://www.cnblogs.com/21207-iHome/p/7832355.html]
+[https://blog.csdn.net/zhuoyueljl/article/details/75453808]
+$ ls -l /dev/ttyUSB0
+# 创建新的程序包imu_test，查询出串口名为“/dev/ttyUSB0”。根据官方给的传感器程序源文件和boost::asio库来实现串口发送request指令，并读取传感器返回的四元数信息。之后将其发送到/IMU_data的话题上
+# 修改CMakeLists.txt
+$ cd ~/miaozi_ws/
+$ catkin_make
+$ source ./devel/setup.bash
+$ rosrun imu_test imu
+$ sudo chmod 666 /dev/ttyUSB0	# $ sudo usermod -G dialout jlurobot	#轻易不要用啊～～
+$ rostopic  echo  /IMU_data
+-----------可视化----------------
+# 1.为了更形象的显示IMU姿态，可以下载rviz_imu_plugin插件并安装
+$ sudo apt-get install git-core
+$ git clone -b melodic https://github.com/ccny-ros-pkg/imu_tools.git
+$ cd ~/catkin_ws
+$ catkin_make
+$ rosrun rviz rviz
+# 在rviz_imu_plugin下添加imu，修改Fixed Frame为base_link，IMU下面的Topic选为/IMU_data，转动IMU rviz中的虚拟立方体和坐标轴会跟着转动（可以更改box三个方向尺寸的比例） 
+# 2.或者
+$ sudo apt install ros-melodic-imu-tools
+
+------------------------------------
+ROS发布imu和gps消息:https://blog.csdn.net/Tansir94/article/details/81385812
+# 1.创建工作空间
+$ mkdir -p ~/imu_ex/src  #创建工作空间
+$ cd ~/imu_ex
+$ catkin_make  #编译
+$ source devel/setup.bash  #将新的工作空间加入到环境变量中
+$ echo $ROS_PACKAGE_PATH   #输入如下指令查看环境变量
+# 2.创建IMU_data发布程序包
+首先下方链接地址中是sensor_msgs/Imu.msg的消息格式：
+http://docs.ros.org/jade/api/sensor_msgs/html/msg/Imu.html
+$ cd imu_ex/src #进入工作空间中的src
+#创建一个名为'imu_ex_publish'的新程序包，这个程序包依赖于std_msgs、roscpp和rospy：
+$ catkin_create_pkg imu_ex_publish std_msgs roscpp rospy  
+#在imu_ex_publish文件夹下的src文件中新建imu_ex_data.cpp
+$ cd imu_ex_publish/src 
+$ touch imu_ex_data.cpp
+# 将如下代码复制到新建的cpp文件中
+# 更改imu_ex_publish下的CMakeLists.txt文件，添加如下两行
+[--------CMakeLists.txt---------]
+add_executable(${PROJECT_NAME}_node src/imu_ex_data.cpp)
+target_link_libraries(${PROJECT_NAME}_node
+  ${catkin_LIBRARIES}
+ )
+[--------CMakeLists.txt---------]
+# 返回工作空间编译：
+$ cd
+$ cd imu_ex
+$ catkin_make 
+# 尝试运行节点：打开roscore，运行节点程序
+$ roscore
+$ rosrun imu_ex_publish imu_ex_publish_node
