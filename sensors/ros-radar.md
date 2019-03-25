@@ -43,3 +43,27 @@ $ rosrun delphi_esr delphi_esr_can
 ============rviz============
 添加Marker，改Global Options为esr_driver，改Marker Topic为/as_tx/radar_markers，可以显示绿色小方条
 
+--------------------------------------
+参考：[https://autonomoustuff.atlassian.net/wiki/spaces/RW/pages/17509820/Delphi+ESR]
+delphi_esr_msgs/EsrTrack | parsed_tx/radartrack | All tracks (unfiltered) produced by the ESR.	
+
+
+$ rostopic type /parsed_tx/radartrack | rosmsg show
+std_msgs/Header header
+  uint32 seq
+  time stamp
+  string frame_id
+string canmsg
+uint8 track_ID
+float32 track_lat_rate
+bool track_group_changed
+uint8 track_status
+float32 track_angle
+float32 track_range
+bool track_bridge_object
+bool track_rolling_count
+float32 track_width
+float32 track_range_accel
+uint8 track_med_range_mode
+float32 track_range_rate
+
