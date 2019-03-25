@@ -240,7 +240,7 @@ $ echo $EDITOR		# 新终端打开,查看EDITOR定义
 ---------------------使用msg--------------------------
 # 1.创建msg文件
 $ cd ~/catkin_ws/src/beginner_tutorials
-$ mkdir msg:
+$ mkdir msg
 $ echo "int64 num" > msg/Num.msg
 # 确保msg文件被转成为其他语言的源代码
 # 2.查看package.xml，确保包含以下两句：
@@ -445,7 +445,45 @@ txt：https://blog.csdn.net/jmzlzl/article/details/82775217
 #将file_name.bag文件中topic_name话题的消息转换到Txt_name.txt文件中：
 $ rostopic echo -b file_name.bag -p /topic_name > Txt_name.txt
 
-------------常见错误！！！！！---------------------
+---------------------------------------------------
+同一个节点订阅和发布不同话题：https://blog.csdn.net/heyijia0327/article/details/45567373
+---------------------------------------------------
+ROS自定义msg类型以及使用:https://blog.csdn.net/u012319441/article/details/78309781?utm_source=blogxgwz7
+---------------------------------------------------
+roslaunch多文件及顺序控制启动：https://blog.csdn.net/sxh_1102/article/details/84660850
+方法一：编写shell文件控制启动顺序
+1.说明
+在catkin workspace中，比如src文件夹下有三个pkg，分别为rb_gazebo,rb_describtion,rb_control
+2.编写脚本文件multi_launch.sh
+[-----------------multi_launch.sh------------------]
+#!/bin/bash 
+
+roslaunch rb_gazebo rb_world.launch &
+sleep 1
+echo "launch rb_gazebo successfully"
+
+roslaunch rb_description rb_rviz.launch &
+sleep 1
+echo "launch rb_rviz successfully"
+
+roslaunch rb_control rb_control.launch &
+echo "launch rb_control successfully"
+
+roslaunch rb_control rb_rqt.launch &
+echo "launch rb_rqt successfully"
+
+wait
+exit 0
+[-----------------multi_launch.sh------------------]
+3.执行
+$ catkin_make
+$ source devel/setup.bash    #不要忘记
+$ chmod a+x multi_launch.sh
+$ ./multi_launch.sh
+
+-------------------launch文件-----------------------
+https://www.cnblogs.com/ChrisCoder/p/9949643.html
+------------！！！！！常见错误！！！！！---------------------
 运行roscore出现以下错误
 RLException: roscore cannot run as another roscore/master is already running. 
 Please kill other roscore/master processes before relaunching.
@@ -456,7 +494,34 @@ $ ps aux|grep roscore
 $ killall -9 roscore
 $ killall -9 rosmaster
 
++++++++++++++++++++++++++
+ERROR: Cannot load message class for [radar_target/myEsrTrack]. Are your messages built?
+解决：
+必须在新打开的Terminal里source workspace下的devel/setup.bash，否则就会在试图rostopic echo自己定义的topic的时候出现这样的错误。
+$ cd ~/catkin_ws
+$ source devel/setup.bash
+$ rostopic echo /[你的topic]
++++++++++++++++++++++++++
+[FATAL] [1552470768.051222]: Could not open serial port: I/O error(2): could not open port /dev/ttyUSB0: [Errno 2] No such file or directory: '/dev/ttyUSB0'  
+解决：sudo chmod 666 /dev/ttyUSB0
++++++++++++++++++++++++++
+[FATAL] [1552808749.431894152]: ASSERTION FAILED
+        file = /opt/ros/melodic/include/ros/publisher.h
+        line = 69
+        cond = false
+        message = 
+[FATAL] [1552808749.434244006]: Call to publish() on an invalid Publisher
+[FATAL] [1552808749.434314149]: 
 
+[image_publisher-7] process has died [pid 108520, exit code -5, cmd /home/jlurobot/fusion_ws/fusion-tracking/devel/lib/radart_bbox/bbox_estimate __name:=image_publisher __log:=/home/jlurobot/.ros/log/4dfeaa1e-4862-11e9-a7cb-a4bf010c634d/image_publisher-7.log].
+log file: /home/jlurobot/.ros/log/4dfeaa1e-4862-11e9-a7cb-a4bf010c634d/image_publisher-7*.log
+解决：publisher没有正确初始化
+++++++++++++++++++++++++++++++++++++
+F0318 15:07:37.460444 15122 io.cpp:45] Check failed: fd != -1 (-1 vs. -1) File not found: /home/jlurobot/GitLabSync/fusion-tracking/model/deploy.prototxt
+解决：将/home/jlurobot/GitLabSync/fusion-tracking/model/deploy.prototxt的绝对地址修改
+++++++++++++++++++++++++++++++++++++
+使用message_filters作同步时报错：undefined reference to `message_filters::Connection::disconnect()'
+解决：CMakeLists.txt或package.xml中缺少包含tf或message_filters
 
 
 
