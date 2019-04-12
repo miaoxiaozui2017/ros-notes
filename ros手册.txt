@@ -483,6 +483,68 @@ $ ./multi_launch.sh
 
 -------------------launch文件-----------------------
 https://www.cnblogs.com/ChrisCoder/p/9949643.html
+在launch文件中启动其他launch文件：
+<include file="$(find packagexx)/launch/111.launch" />
+-------------------topic name-----------------------
+原文：https://blog.csdn.net/ethan_guo/article/details/80262650 
+更改话题名：
+1.某个节点订阅或者发布的消息名想换一下，可以通过launch文件的remap功能。【例子】
+
+2.改变bag文件里的消息名称。比如我有个bag文件，有个topic我想改个名字适应我的源码，可以这样做：
+
+rosbag play file.bag /foo:=/bar    #/foo是原topic，/bar是新topic
+--------------------ros时间戳的问题---------------
+1.同时播放两个bag，从最早的时间戳开始
+--------------------ros主从机使用----------------
+wifi：https://www.jianshu.com/p/5ff453cb994e
+直连：https://www.jianshu.com/p/bfe7de34deb4
+# 查看ip地址
+$ ifconfig
+# 查看主机名称
+$ hostname
+# 1.更改名称，主机master-ubuntu01，从机slave-ubuntu01
+$ sudo vim /etc/hostname
+# add -->> master-ubuntu01	#中间Tab
+# 2.配置电脑及虚拟机的ip地址
+ubuntu端口各自为不同的ip地址，两个ubuntu需在相同的网关下。
+master：
+ubuntu端： 网络设置--eth0或wiredconnection---edit---ipv4设置---add--《192.168.2.22》《255.255.255.0》《192.168.2.1》
+slave：
+ubuntu端： 网络设置--eth0或wiredconnection---edit---ipv4设置---add--《192.168.2.11》《255.255.255.0》《192.168.2.1》
+测试：
+$ ping 192.168.2.* 	# 更换其他ip都成功则配置ok
+# 3.配置ubuntu系统中hosts
+$ sudo vim /etc/hosts
+example：
+127.0.0.1 localhost   （中间是tab）
+127.0.1.1   master-ubuntu01  （hostname）
+192.168.2.22    master-ubuntu01
+192.168.2.11    slave-ubuntu01
+相同的配置好其他系统中的hosts
+测试：
+#ping hostname 
+$ ping slave-ubuntu01
+# 4.设置默认环境变量
+sudo vim ~/.bashrc
+master-ubuntu01：
+export ROS_HOSTNAME=master-ubuntu01
+export ROS_MASTER_URI=http://master-ubuntu01:11311
+其中设置ROS_MASTER_URI中的地址即为主机的地址。可以roscore开启总的节点服务器。
+slave-ubuntu01：
+export ROS_HOSTNAME=slave-ubuntu01
+export ROS_MASTER_URI=http://master-ubuntu01:11311
+其中设置本机hostname为slave-ubuntu01，以master-ubuntu01的主机运行节点。
+# 5.运行测试
+master-ubuntu01：
+roscore
+rosrun turtlesim turtlesimnode
+slave-ubuntu01：
+rosrun turtlesim turtle_teleop_key
+运行ubuntu0074的键盘即可操控ubuntu0556中的海龟运动了。
+*注：
+若想以slave-ubuntu01作主机 只需要将两台机器的环境变量改为export ROS_MASTER_URI=http://slave-ubuntu01:11311
+在slave-ubuntu01中运行roscore
+
 ------------！！！！！常见错误！！！！！---------------------
 运行roscore出现以下错误
 RLException: roscore cannot run as another roscore/master is already running. 
@@ -522,7 +584,14 @@ F0318 15:07:37.460444 15122 io.cpp:45] Check failed: fd != -1 (-1 vs. -1) File n
 ++++++++++++++++++++++++++++++++++++
 使用message_filters作同步时报错：undefined reference to `message_filters::Connection::disconnect()'
 解决：CMakeLists.txt或package.xml中缺少包含tf或message_filters
-
+++++++++++++++++++++++++++++++++++++
+Warning: TF_OLD_DATA ignoring data from the past for frame base_link at time 0 according to authority unknown_publisher
+Possible reasons are listed at http://wiki.ros.org/tf/Errors%20explained
+         at line 277 in /tmp/binarydeb/ros-melodic-tf2-0.6.5/src/buffer_core.cpp
+解决：
+  TF_OLD_DATA errors mean that a transform is attempted to be added to the system, but the data is greater than cache_time_ before the most recent data received for this link.
+- The most common cause of TF_OLD_DATA warnings are if rostime has gone backwards. This can be caused by restarting a bag playback or restarting a simulator. The fix for this is to send an Empty message the topic /reset_time. There is a button in rviz to do this.
+- Another possible source of TF_OLD_DATA is if there is any outdated or delayed source of transforms. The error message will tell you which authority is sending the outdated data. If it is running in a ros node you can use view_frames to determine the more recent authority. See view_frames. 
 
 
 
