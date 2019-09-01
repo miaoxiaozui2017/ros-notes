@@ -13,10 +13,10 @@ $ sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 42
 $ sudo apt update
 
 # Desktop-Full Install: (Recommended) : ROS, rqt, rviz, robot-generic libraries, 2D/3D simulators # and 2D/3D perception
-$ sudo apt install ros-melodic-desktop-full
 $ sudo apt install python-rosdep
 $ sudo rosdep init
 $ rosdep update
+$ sudo apt install ros-melodic-desktop-full
 $ echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 //$ source /opt/ros/melodic/setup.bash
 $ sudo apt install python-rosinstall python-rosinstall-generator python-wstool build-essential
