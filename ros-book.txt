@@ -11,12 +11,50 @@ https://www.ncnynl.com/archives/201801/2273.html
 $ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 $ sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
 $ sudo apt update
+++++++++Errors+++++++++
+Q:
+Get:2 http://security.ubuntu.com/ubuntu bionic-security InRelease [88.7 kB]                   
+Hit:3 http://cn.archive.ubuntu.com/ubuntu bionic InRelease                      
+Get:1 http://packages.ros.org/ros/ubuntu bionic InRelease [4,669 B]                           
+Get:4 http://cn.archive.ubuntu.com/ubuntu bionic-updates InRelease [88.7 kB]                  
+Err:1 http://packages.ros.org/ros/ubuntu bionic InRelease                                     
+  The following signatures couldn't be verified because the public key is not available: NO_PUBKEY F42ED6FBAB17C654
+Get:5 http://cn.archive.ubuntu.com/ubuntu bionic-backports InRelease [74.6 kB]                
+Reading package lists... Done      
 
+W: GPG error: http://packages.ros.org/ros/ubuntu bionic InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY F42ED6FBAB17C654
+E: The repository 'http://packages.ros.org/ros/ubuntu bionic InRelease' is not signed.
+N: Updating from such a repository can't be done securely, and is therefore disabled by default.
+N: See apt-secure(8) manpage for repository creation and user configuration details.
+
+A:
+$ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654
++++++++++++++++++
+Q:
+Executing: /tmp/apt-key-gpghome.ta4dVTj450/gpg.1.sh --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654
+gpg: key F42ED6FBAB17C654: public key "Open Robotics <info@osrfoundation.org>" imported
+gpg: Total number processed: 1
+gpg:               imported: 1
+gpg: no writable keyring found: Not found
+gpg: error reading '[stdin]': General error
+gpg: import from '[stdin]' failed: General error
+gpg: Total number processed: 0
+
+A:
+$ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654
++++++++++END++++++++
 # Desktop-Full Install: (Recommended) : ROS, rqt, rviz, robot-generic libraries, 2D/3D simulators # and 2D/3D perception
+#$ sudo apt-get install python-rosdep python-rosinstall-generator python-wstool python-rosinstall build-essential
 $ sudo apt install python-rosdep
 $ sudo rosdep init
 $ rosdep update
 $ sudo apt install ros-melodic-desktop-full
++++++++++++++++++
+Q:
+E: Unmet dependencies. Try 'apt --fix-broken install' with no packages (or specify a solution).
+A:
+$ sudo apt --fix-broken install
++++++++++++++++++
 $ echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 //$ source /opt/ros/melodic/setup.bash
 $ sudo apt install python-rosinstall python-rosinstall-generator python-wstool build-essential
